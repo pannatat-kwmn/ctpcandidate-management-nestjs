@@ -3,7 +3,6 @@ import { UUID } from 'crypto';
 
 export class CreateCandidateDto {
     
-    @ApiProperty({ required: true })
     candidateId: UUID;
   
     @ApiProperty({ required: true })
@@ -42,6 +41,5 @@ export class CreateCandidateDto {
     @ApiProperty({ required: true })
     createBy: string;
 
-    @ApiProperty({ required: true })
     createAt: Date;
 }

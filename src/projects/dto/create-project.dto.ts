@@ -2,13 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 
 export class CreateProjectDto {
+    @ApiProperty({ required: true })
+    projectName: string;
 
     @ApiProperty({ required: true })
-    ProjectID: UUID;
-  
+    projectDescription: string;
+    
     @ApiProperty({ required: true })
-    ProjectName: string;
+    projectStatus: string;
 
     @ApiProperty({ required: true })
-    ProjectContent: string;
+    createBy: string;
 }
