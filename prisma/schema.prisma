@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Candidates {
+  candidateId      String             @id(map: "PK_Candidates") @db.UniqueIdentifier
+  email            String             @unique(map: "Candidates_Email_key")
+  firstName        String             @db.NVarChar(50)
+  lastName         String             @db.NVarChar(50)
+  birthDate        DateTime?          @db.Date
+  minSalary        Decimal?           @db.Decimal(18, 2)
+  maxSalary        Decimal?           @db.Decimal(18, 2)
+  workExperience   String?            @db.NVarChar(50)
+  phoneNumber      String             @db.NVarChar(Max)
+  candidateAddress String?            @db.NText
+  candidateImage   String?            @db.NVarChar(256)
+  candidateJob     String             @db.NVarChar(100)
+  jobCategory      String             @db.NVarChar(100)
+  status           String?            @db.NVarChar(50)
+  createBy         String             @db.NVarChar(100)
+  createAt         DateTime           @db.DateTime
+  editBy           String?            @db.NVarChar(100)
+  editAt           DateTime?          @db.DateTime
+  deleteAt         DateTime?          @db.DateTime
+  ProjectCandidate ProjectCandidate[]
+}
+
+model Projects {
+  projectId          String             @id(map: "PK_Projects") @db.UniqueIdentifier
+  projectName        String             @db.NVarChar(100)
+  projectDescription String             @db.NVarChar(500)
+  ProjectCandidate   ProjectCandidate[]
+  projectStatus      String             @db.NVarChar(50)
+  createBy           String             @db.NVarChar(100)
+  createAt           DateTime           @db.DateTime
+  editBy             String?            @db.NVarChar(100)
+  editAt             DateTime?          @db.DateTime
+}
+
+model ProjectCandidate {
+  candidateId String     @db.UniqueIdentifier
+  projectId   String     @db.UniqueIdentifier
+  Candidates  Candidates @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade, map: "_ProjectCandidate_A_fkey")
+  Projects    Projects   @relation(fields: [projectId], references: [projectId], onDelete: Cascade, map: "_ProjectCandidate_B_fkey")
+
+  @@unique([candidateId, projectId], map: "_ProjectCandidate_AB_unique")
+  @@index([projectId], map: "_ProjectCandidate_B_index")
+  @@map("_ProjectCandidate")
+}
+
+model Users {
+  userId           String          @id(map: "PK_Users") @db.UniqueIdentifier
+  userName         String          @unique @db.NVarChar(50)
+  userPassword     String          @db.NVarChar(256)
+  userEmail        String          @unique @db.NVarChar(128)
+  profileFirstName String          @db.NVarChar(100)
+  profileLastName  String          @db.NVarChar(100)
+  profileImage     String?         @db.NVarChar(Max)
+  userSalt         String          @db.NVarChar(100)
+  createBy         String          @db.NVarChar(100)
+  createAt         DateTime        @db.DateTime
+  editBy           String?         @db.NVarChar(100)
+  editAt           DateTime?       @db.DateTime
+  deleteAt         DateTime?       @db.DateTime
+  userRole         rolePermissions @relation(fields: [permissionId], references: [roleId])
+  permissionId     String          @db.UniqueIdentifier
+}
+
+model rolePermissions {
+  roleId    String    @id(map: "PK_PermissionLevel") @db.UniqueIdentifier
+  roleName  String    @unique
+  canView   Boolean
+  canEdit   Boolean
+  canDelete Boolean
+  canCreate Boolean
+  createAt  DateTime  @db.DateTime
+  updateAt  DateTime? @db.DateTime
+  user      Users[]
+}
